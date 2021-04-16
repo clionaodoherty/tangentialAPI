@@ -1,11 +1,9 @@
-import pandas as pd
 import spacy
 
 nlp = spacy.load("en_core_web_md")
-df = pd.read_csv("processedCSV.csv")
+with open("dataset.txt") as f:
+    data = f.readlines()
 
-SMALLEST_N = 12
-LARGEST_N = 64
 SMALLEST_SIM = 0.34
 LARGEST_SIM = 0.68
 TARGET_SIM = SMALLEST_SIM + ((LARGEST_SIM - SMALLEST_SIM)/2)
@@ -21,7 +19,7 @@ def process_text(text):
         if token.lemma_ == '-PRON-':
             continue
         result.append(token.lemma_)
-    # print(" ".join(result))
+    result = [item.strip() for item in result if item.strip()]
     return " ".join(result)
 
 def scoreTangentiality(text_a, text_b):
@@ -31,12 +29,12 @@ def scoreTangentiality(text_a, text_b):
 def getBestMatch(text):
     bestScore = 1
     bestMatch = ""
-
-    for index,row in df.iterrows():
-        print(row)
-        score = scoreTangentiality(row["Previous"], text)
+    text = process_text(text)
+    
+    for row in data:
+        score = scoreTangentiality(row, text)
         if score < bestScore:
             bestScore = score
-            bestMatch = row["Previous"]
+            bestMatch = row
 
     return bestMatch
