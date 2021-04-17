@@ -36,8 +36,9 @@ def getBestMatch(text):
     bestMatch = ""
     text = process_text(text)
 
-    pool = multiprocessing.Pool(1)
-    results = pool.map(partial(scoreTangentiality, text_b=text), data)
+    # pool = multiprocessing.Pool(1)
+    # results = pool.map(partial(scoreTangentiality, text_b=text), data)
+    results = [scoreTangentiality(row, text) for row in data]
 
     for score,row in results:
         if score < bestScore:
