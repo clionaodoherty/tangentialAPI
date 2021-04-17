@@ -1,8 +1,10 @@
 import spacy
+import multiprocessing
+from functools import partial
 
 nlp = spacy.load("en_core_web_md")
 with open("dataset.txt") as f:
-    data = f.readlines()
+    data = [x.strip() for x in f.readlines() if x.strip()]
 
 SMALLEST_SIM = 0.34
 LARGEST_SIM = 0.68
@@ -24,15 +26,18 @@ def process_text(text):
 
 def scoreTangentiality(text_a, text_b):
     score = nlp(text_a).similarity(nlp(text_b))
-    return abs(TARGET_SIM-score)
+    return abs(TARGET_SIM-score), text_a
+
 
 def getBestMatch(text):
     bestScore = 1
     bestMatch = ""
     text = process_text(text)
-    
-    for row in data:
-        score = scoreTangentiality(row, text)
+
+    pool = multiprocessing.Pool()
+    results = pool.map(partial(scoreTangentiality, text_b=text), data)
+
+    for score,row in results:
         if score < bestScore:
             bestScore = score
             bestMatch = row
