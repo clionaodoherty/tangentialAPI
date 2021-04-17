@@ -34,7 +34,7 @@ def getBestMatch(text):
     bestMatch = ""
     text = process_text(text)
 
-    pool = multiprocessing.Pool()
+    pool = multiprocessing.Pool(multiprocessing.cpu_count()-1)
     results = pool.map(partial(scoreTangentiality, text_b=text), data)
 
     for score,row in results:
