@@ -4,8 +4,7 @@ from functools import partial
 import gc
 
 nlp = spacy.load("en_core_web_md")
-with open("dataset.txt") as f:
-    data = [x.strip() for x in f.readlines() if x.strip()]
+
 
 SMALLEST_SIM = 0.34
 LARGEST_SIM = 0.68
@@ -34,14 +33,16 @@ def getBestMatch(text):
     gc.collect()
     bestScore = 1
     bestMatch = ""
-    text = process_text(text)
-
-    pool = multiprocessing.Pool(multiprocessing.cpu_count()-1)
-    results = pool.map(partial(scoreTangentiality, text_b=text), data)
-
-    for score,row in results:
-        if score < bestScore:
-            bestScore = score
-            bestMatch = row
+    # text = process_text(text)
+    #
+    # pool = multiprocessing.Pool(multiprocessing.cpu_count()-1)
+    # results = pool.map(partial(scoreTangentiality, text_b=text), data)
+    with open("dataset.txt") as f:
+        for row in f.readlines():
+            if row.strip():
+                score = scoreTangentiality(row.strip(), text)
+                if score < bestScore:
+                    bestScore = score
+                    bestMatch = row
 
     return bestMatch
