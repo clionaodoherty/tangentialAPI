@@ -1,6 +1,7 @@
 import spacy
 import multiprocessing
 from functools import partial
+import gc
 
 nlp = spacy.load("en_core_web_md")
 with open("dataset.txt") as f:
@@ -30,11 +31,12 @@ def scoreTangentiality(text_a, text_b):
 
 
 def getBestMatch(text):
+    gc.collect()
     bestScore = 1
     bestMatch = ""
     text = process_text(text)
 
-    pool = multiprocessing.Pool(multiprocessing.cpu_count()-1)
+    pool = multiprocessing.Pool(multiprocessing.cpu_count()-2)
     results = pool.map(partial(scoreTangentiality, text_b=text), data)
 
     for score,row in results:
