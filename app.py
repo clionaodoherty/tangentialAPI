@@ -1,5 +1,5 @@
 from flask import Flask, request
-from tanScore import getBestMatch
+from tanScore2 import getBestMatch
 
 app = Flask(__name__)
 
